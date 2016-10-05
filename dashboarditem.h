@@ -63,6 +63,9 @@ private:
 
     QSettings *settings;
 
+    bool resizedNow;
+    QPoint oldPoint;
+
     void setPropertyIsDraged(bool is);
 
 private slots:
@@ -72,6 +75,7 @@ private slots:
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 };
 
 #endif // DASHBOARDITEM_H

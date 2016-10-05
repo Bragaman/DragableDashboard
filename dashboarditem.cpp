@@ -21,14 +21,13 @@ DashboardItem::DashboardItem(QWidget *parent) :
     curPos = 0;
     curHeight = 150;
     state = State::NORMAL;
+    resizedNow = false;
     setPropertyIsDraged(false);
-    settings = nullptr;
-
+    setSettings(nullptr);
 }
 
 DashboardItem::DashboardItem(QWidget *central, const QString &name, QSettings *settings, QWidget *parent) :
     QWidget(parent),
-    settings(settings),
     ui(new Ui::DashboardItem)
 
 {
@@ -36,21 +35,8 @@ DashboardItem::DashboardItem(QWidget *central, const QString &name, QSettings *s
     setName(name);
     setCentralWidget(central);
     setPropertyIsDraged(false);
-
-    if (settings != nullptr) {
-        curHeight = settings->value(DASHBOARD_GROUP +MODULE_HEIGHT.arg(name), 150).toInt();
-        curPos = settings->value(DASHBOARD_GROUP +MODULE_POS.arg(name), 0).toInt();
-        state = State(settings->value(DASHBOARD_GROUP +MODULE_STATE.arg(name), State::NORMAL).toInt());
-    } else {
-        setStyleSheet("DashboardItem "
-                      "{background: #2F2F2F;"
-                      "}"
-                      "DashboardItem[isDraged=true] "
-                      "{background: red;}");
-        curPos = 0;
-        curHeight = 150;
-        state = State::NORMAL;
-    }
+    resizedNow = false;
+    setSettings(settings);
 }
 
 DashboardItem::~DashboardItem()
@@ -77,7 +63,7 @@ void DashboardItem::setName(const QString &value)
 
 void DashboardItem::setCentralWidget(QWidget *widget)
 {
-    ui->itemLayout->addWidget(widget, 0,0,1,1);
+    ui->itemLayout->addWidget(widget, 0,0,1,3);
 }
 
 void DashboardItem::setPropertyIsDraged(bool is)
@@ -125,22 +111,38 @@ QSettings *DashboardItem::getSettings() const
 void DashboardItem::setSettings(QSettings *value)
 {
     settings = value;
+    if (settings != nullptr) {
+        curHeight = settings->value(DASHBOARD_GROUP +MODULE_HEIGHT.arg(name), 150).toInt();
+        curPos = settings->value(DASHBOARD_GROUP +MODULE_POS.arg(name), 0).toInt();
+        state = State(settings->value(DASHBOARD_GROUP +MODULE_STATE.arg(name), State::NORMAL).toInt());
+    } else {
+        setStyleSheet("DashboardItem "
+                      "{background: #2F2F2F;"
+                      "}"
+                      "DashboardItem[isDraged=true] "
+                      "{background: red;}");
+        curPos = 0;
+        curHeight = 150;
+        state = State::NORMAL;
+    }
 }
 
 void DashboardItem::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton
-            && ui->widgetPanel->geometry().contains(event->pos())) {
-        QDrag *drag = new QDrag(this);
-        QMimeData *mimeData = new QMimeData;
-        QPixmap* pixmap =new QPixmap(size());
-        render(pixmap);
-        setPropertyIsDraged(true);
-        mimeData->setData("dashboard/item", name.toUtf8() );
-        drag->setMimeData(mimeData);
-        drag->setPixmap(*pixmap);
-        Qt::DropAction dropAction = drag->exec(Qt::MoveAction);
-        setPropertyIsDraged(false);
+    if (event->button() == Qt::LeftButton ) {
+        auto point = event->pos();
+        if (ui->widgetPanel->geometry().contains(point)) {
+            QDrag *drag = new QDrag(this);
+            QMimeData *mimeData = new QMimeData;
+            QPixmap* pixmap =new QPixmap(size());
+            render(pixmap);
+            setPropertyIsDraged(true);
+            mimeData->setData("dashboard/item", name.toUtf8() );
+            drag->setMimeData(mimeData);
+            drag->setPixmap(*pixmap);
+            Qt::DropAction dropAction = drag->exec(Qt::MoveAction);
+            setPropertyIsDraged(false);
+        }
     }
 }
 
@@ -152,6 +154,11 @@ void DashboardItem::paintEvent(QPaintEvent *event)
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
     QWidget::paintEvent(event);
+}
+
+void DashboardItem::mouseMoveEvent(QMouseEvent *event)
+{
+    QWidget::mouseMoveEvent(event);
 }
 
 
