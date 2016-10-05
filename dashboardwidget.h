@@ -25,6 +25,8 @@ public:
 private:
     Ui::Widget *ui;
 
+    void setWidgetOnLayout(QWidget *widget, int index = 0);
+
     bool moveWidget(const QPoint &newPos, QWidget *widget);
     void showDropPos(const QPoint &newPos);
     void findPos(const QPoint &newPos);

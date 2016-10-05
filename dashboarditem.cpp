@@ -3,6 +3,11 @@
 
 #include <QPainter>
 
+const QString DashboardItem::DASHBOARD_GROUP      = "dashboard/";
+const QString DashboardItem::MODULE_POS           = "module_%1_pos";
+const QString DashboardItem::MODULE_HEIGHT        = "module_%1_height";
+const QString DashboardItem::MODULE_STATE         = "module_%1_state";
+
 DashboardItem::DashboardItem(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::DashboardItem)
@@ -17,11 +22,13 @@ DashboardItem::DashboardItem(QWidget *parent) :
     curHeight = 150;
     state = State::NORMAL;
     setPropertyIsDraged(false);
+    settings = nullptr;
 
 }
 
 DashboardItem::DashboardItem(QWidget *central, const QString &name, QSettings *settings, QWidget *parent) :
     QWidget(parent),
+    settings(settings),
     ui(new Ui::DashboardItem)
 
 {
@@ -31,7 +38,9 @@ DashboardItem::DashboardItem(QWidget *central, const QString &name, QSettings *s
     setPropertyIsDraged(false);
 
     if (settings != nullptr) {
-        //TODO get settings from settings file
+        curHeight = settings->value(DASHBOARD_GROUP +MODULE_HEIGHT.arg(name), 150).toInt();
+        curPos = settings->value(DASHBOARD_GROUP +MODULE_POS.arg(name), 0).toInt();
+        state = State(settings->value(DASHBOARD_GROUP +MODULE_STATE.arg(name), State::NORMAL).toInt());
     } else {
         setStyleSheet("DashboardItem "
                       "{background: #2F2F2F;"
@@ -46,6 +55,12 @@ DashboardItem::DashboardItem(QWidget *central, const QString &name, QSettings *s
 
 DashboardItem::~DashboardItem()
 {
+    if (settings) {
+        settings->setValue(DASHBOARD_GROUP +MODULE_HEIGHT.arg(name), curHeight);
+        settings->setValue(DASHBOARD_GROUP +MODULE_POS.arg(name), curPos);
+        settings->setValue(DASHBOARD_GROUP +MODULE_STATE.arg(name), state);
+        settings->sync();
+    }
     delete ui;
 }
 
@@ -100,6 +115,16 @@ int DashboardItem::getCurPos() const
 void DashboardItem::setCurPos(int value)
 {
     curPos = value;
+}
+
+QSettings *DashboardItem::getSettings() const
+{
+    return settings;
+}
+
+void DashboardItem::setSettings(QSettings *value)
+{
+    settings = value;
 }
 
 void DashboardItem::mousePressEvent(QMouseEvent *event)

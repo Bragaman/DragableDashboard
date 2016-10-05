@@ -19,6 +19,12 @@ class DashboardItem : public QWidget
     Q_OBJECT
 
 public:
+
+    static const QString DASHBOARD_GROUP;
+    static const QString MODULE_POS;
+    static const QString MODULE_HEIGHT;
+    static const QString MODULE_STATE;
+
     enum State {
         NORMAL,
         CLOSED,
@@ -44,6 +50,9 @@ public:
     int getCurPos() const;
     void setCurPos(int value);
 
+    QSettings *getSettings() const;
+    void setSettings(QSettings *value);
+
 private:
     Ui::DashboardItem *ui;
 
@@ -51,6 +60,8 @@ private:
     State state;
     int curHeight;
     int curPos;
+
+    QSettings *settings;
 
     void setPropertyIsDraged(bool is);
 

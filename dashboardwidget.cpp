@@ -12,6 +12,11 @@ DashboardWidget::DashboardWidget(QWidget *parent) :
 
 DashboardWidget::~DashboardWidget()
 {
+    for (int i=0; i <  ui->verticalLayout->count(); ++i) {
+        auto obj = qobject_cast<DashboardItem* >(ui->verticalLayout->itemAt(i)->widget());
+        obj->setCurPos(i);
+    }
+
     delete ui;
 }
 
@@ -20,16 +25,22 @@ void DashboardWidget::addWidget(DashboardItem *item)
 {
     auto name = item->getName();
     if (!mapItems.contains(name)) {
+        int count = ui->verticalLayout->count();
         mapItems.insert(name , item);
         int pos = item->getCurPos();
-        if (ui->verticalLayout->isEmpty())
+        if (count == 0) {
             ui->verticalLayout->insertWidget(0, item);
-        else
-            for (int i=0; i < ui->verticalLayout->count(); ++i)
-                if (pos <= qobject_cast<DashboardItem* >(ui->verticalLayout->itemAt(i)->widget())->getCurPos()) {
-                    ui->verticalLayout->insertWidget(i, item);
-                    break;
-                }
+            return;
+        }
+
+        for (int i=0; i < count; ++i) {
+            int widgPos = qobject_cast<DashboardItem* >(ui->verticalLayout->itemAt(i)->widget())->getCurPos();
+            if (pos <= widgPos) {
+                ui->verticalLayout->insertWidget(i, item);
+                return;
+            }
+        }
+        ui->verticalLayout->insertWidget(count, item);
     }
 }
 
