@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,45">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,2">
    <property name="spacing">
     <number>2</number>
    </property>
@@ -113,9 +113,6 @@
       <property name="horizontalSpacing">
        <number>0</number>
       </property>
-      <item row="0" column="0">
-       <widget class="QColumnView" name="columnView"/>
-      </item>
      </layout>
     </widget>
    </item>

@@ -20,26 +20,21 @@ public:
     explicit DashboardWidget(QWidget *parent = 0);
     ~DashboardWidget();
 
-    void initDashboard();
+    void addWidget(DashboardItem *item);
 
 private:
     Ui::Widget *ui;
-    QMap<QString, QWidget*> mapItems;
-    // QWidget interface
+
     bool moveWidget(const QPoint &newPos, QWidget *widget);
     void showDropPos(const QPoint &newPos);
-    // QWidget interface
     void findPos(const QPoint &newPos);
 
 
+    QMap<QString, QWidget*> mapItems;
     int newIndex;
     int oldIndex;
     QWidget* currentDragedWidget;
-    QWidget* helperWideget;
 
-    void addItemToList(DashboardItem* item2);
-
-    // QWidget interface
     void hideItem(QWidget *widget);
 
 protected:

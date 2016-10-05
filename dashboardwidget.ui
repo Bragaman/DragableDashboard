@@ -16,21 +16,9 @@
   <property name="windowTitle">
    <string>Widget</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="DashboardItem" name="widget" native="true"/>
-   </item>
-  </layout>
+  <layout class="QVBoxLayout" name="verticalLayout"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>DashboardItem</class>
-   <extends>QWidget</extends>
-   <header>dashboarditem.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

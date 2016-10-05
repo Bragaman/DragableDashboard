@@ -6,34 +6,31 @@ DashboardWidget::DashboardWidget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    QFrame* line = new QFrame();
-    line->setGeometry(QRect(/* ... */));
-    line->setFrameShape(QFrame::HLine); // Replace by VLine for vertical line
-    line->setFrameShadow(QFrame::Sunken);
-    helperWideget = line;
     newIndex = -1;
     oldIndex = -1;
-    initDashboard();
 }
 
 DashboardWidget::~DashboardWidget()
 {
-    delete helperWideget;
     delete ui;
 }
 
-void DashboardWidget::initDashboard()
+
+void DashboardWidget::addWidget(DashboardItem *item)
 {
-    DashboardItem* item = new DashboardItem(this);
-    item->setName("test 1");
-    ui->verticalLayout->addWidget(item);
-    DashboardItem* item2 = new DashboardItem(this);
-    item2->setName("AGAAAAAAAARh");
-    ui->verticalLayout->addWidget(item2);
-    mapItems.insert(item2->getName(), item2);
-    ui->widget->setName("test dfghjk");
-    mapItems.insert(item->getName(), item);
-    mapItems.insert(ui->widget->getName(), ui->widget);
+    auto name = item->getName();
+    if (!mapItems.contains(name)) {
+        mapItems.insert(name , item);
+        int pos = item->getCurPos();
+        if (ui->verticalLayout->isEmpty())
+            ui->verticalLayout->insertWidget(0, item);
+        else
+            for (int i=0; i < ui->verticalLayout->count(); ++i)
+                if (pos <= qobject_cast<DashboardItem* >(ui->verticalLayout->itemAt(i)->widget())->getCurPos()) {
+                    ui->verticalLayout->insertWidget(i, item);
+                    break;
+                }
+    }
 }
 
 
@@ -43,9 +40,7 @@ bool DashboardWidget::moveWidget(const QPoint& newPos, QWidget* widget)
     findPos(newPos);
     if (newIndex == -1)
         newIndex = oldIndex;
-//        return  false;
 
-//    ui->verticalLayout->removeWidget(widget);
     ui->verticalLayout->insertWidget(newIndex, widget);
     ui->verticalLayout->update();
     return true;
@@ -72,9 +67,7 @@ void DashboardWidget::findPos(const QPoint &newPos)
                 newIndex = row +1;
             if (tmp <l)
                 newIndex = row;
-
-            qDebug() << "Y pos: " <<  tmp << "; Y2 =  " << y2 << "; index = " << newIndex;
-
+            //            qDebug() << "Y pos: " <<  tmp << "; Y2 =  " << y2 << "; index = " << newIndex;
             break;
         }
 
@@ -87,18 +80,16 @@ void DashboardWidget::showDropPos(const QPoint &newPos)
     findPos(newPos);
     if (newIndex == -1) {
         hideItem(currentDragedWidget);
-//        ui->verticalLayout->removeWidget(helperWideget);
     } else {
         ui->verticalLayout->insertWidget(newIndex, currentDragedWidget);
         ui->verticalLayout->update();
         currentDragedWidget->show();
     }
-//        ui->verticalLayout->insertWidget(newIndex, helperWideget);
+
 }
 
 void DashboardWidget::dropEvent(QDropEvent *event)
 {
-    ui->verticalLayout->removeWidget(helperWideget);
     auto mimeData = event->mimeData();
 
 
@@ -120,9 +111,6 @@ void DashboardWidget::dragMoveEvent(QDragMoveEvent *event)
 
 void DashboardWidget::dragLeaveEvent(QDragLeaveEvent *event)
 {
-    qDebug() << "drag leave event";
-    ui->verticalLayout->removeWidget(helperWideget);
-
     QWidget::dragLeaveEvent(event);
 }
 
