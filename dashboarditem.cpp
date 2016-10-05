@@ -19,7 +19,7 @@ DashboardItem::DashboardItem(QWidget *parent) :
                   "DashboardItem[isDraged=true] "
                   "{background: red;}");
     curPos = 0;
-    curHeight = 150;
+    setCurHeight(155);
     state = State::NORMAL;
     resizedNow = false;
     setPropertyIsDraged(false);
@@ -91,6 +91,7 @@ int DashboardItem::getCurHeight() const
 void DashboardItem::setCurHeight(int value)
 {
     curHeight = value;
+    resize(width(), curHeight);
 }
 
 int DashboardItem::getCurPos() const
@@ -112,7 +113,7 @@ void DashboardItem::setSettings(QSettings *value)
 {
     settings = value;
     if (settings != nullptr) {
-        curHeight = settings->value(DASHBOARD_GROUP +MODULE_HEIGHT.arg(name), 150).toInt();
+        setCurHeight(settings->value(DASHBOARD_GROUP +MODULE_HEIGHT.arg(name), 200).toInt());
         curPos = settings->value(DASHBOARD_GROUP +MODULE_POS.arg(name), 0).toInt();
         state = State(settings->value(DASHBOARD_GROUP +MODULE_STATE.arg(name), State::NORMAL).toInt());
     } else {

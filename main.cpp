@@ -11,8 +11,8 @@ int main(int argc, char *argv[])
     auto table1 = new QTableWidget();
     w.addWidget(new DashboardItem(table1, "Test1", settings));
     w.addWidget(new DashboardItem(new QTableWidget(), "Test2", settings));
-
     w.addWidget(new DashboardItem(new QTableWidget(), "Test3", settings));
+    w.addWidget(new DashboardItem(new QTableWidget(), "Test4", settings));
     settings->sync();
 
     return a.exec();
