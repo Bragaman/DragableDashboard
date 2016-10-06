@@ -81,7 +81,6 @@ void DashboardWidget::findPos(const QPoint &newPos)
                     newIndex = row +1;
                 if (tmp <l)
                     newIndex = row;
-                //            qDebug() << "Y pos: " <<  tmp << "; Y2 =  " << y2 << "; index = " << newIndex;
                 break;
             }
 

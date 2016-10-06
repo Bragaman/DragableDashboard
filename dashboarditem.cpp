@@ -113,8 +113,10 @@ int DashboardItem::getCurHeight() const
 
 void DashboardItem::setCurHeight(int value)
 {
-    curHeight = value;
-    setFixedHeight(curHeight);
+    if (value > 42) {
+        curHeight = value;
+        setFixedHeight(curHeight);
+    }
 }
 
 int DashboardItem::getCurPos() const
