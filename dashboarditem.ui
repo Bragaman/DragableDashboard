@@ -99,13 +99,13 @@
     <widget class="QWidget" name="widget_hideable" native="true">
      <layout class="QGridLayout" name="itemLayout" rowstretch="40,0">
       <property name="leftMargin">
-       <number>0</number>
+       <number>3</number>
       </property>
       <property name="topMargin">
-       <number>0</number>
+       <number>3</number>
       </property>
       <property name="rightMargin">
-       <number>0</number>
+       <number>3</number>
       </property>
       <property name="bottomMargin">
        <number>0</number>

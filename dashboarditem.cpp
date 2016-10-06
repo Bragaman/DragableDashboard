@@ -31,6 +31,11 @@ DashboardItem::DashboardItem(QWidget *central, const QString &name, QSettings *s
     ui(new Ui::DashboardItem)
 
 {
+    setStyleSheet("DashboardItem "
+                  "{background: #2F2F2F;"
+                  "}"
+                  "DashboardItem[isDraged=true] "
+                  "{border: 3px solid red;}");
     ui->setupUi(this);
     setName(name);
     setCentralWidget(central);
@@ -81,6 +86,21 @@ DashboardItem::State DashboardItem::getState() const
 void DashboardItem::setState(const DashboardItem::State &value)
 {
     state = value;
+    ui->push_arrow->blockSignals(true);
+    switch (state) {
+    case State::NORMAL:
+        setFixedHeight(curHeight);
+        ui->widget_hideable->setVisible(true);
+        ui->push_arrow->setChecked(false);
+        break;
+    case State::CLOSED:
+        setFixedHeight(44);
+        ui->widget_hideable->setVisible(false);
+        ui->push_arrow->setChecked(true);
+    default:
+        break;
+    }
+    ui->push_arrow->blockSignals(false);
 }
 
 int DashboardItem::getCurHeight() const
@@ -91,7 +111,7 @@ int DashboardItem::getCurHeight() const
 void DashboardItem::setCurHeight(int value)
 {
     curHeight = value;
-    resize(width(), curHeight);
+    setFixedHeight(curHeight);
 }
 
 int DashboardItem::getCurPos() const
@@ -115,7 +135,7 @@ void DashboardItem::setSettings(QSettings *value)
     if (settings != nullptr) {
         setCurHeight(settings->value(DASHBOARD_GROUP +MODULE_HEIGHT.arg(name), 200).toInt());
         curPos = settings->value(DASHBOARD_GROUP +MODULE_POS.arg(name), 0).toInt();
-        state = State(settings->value(DASHBOARD_GROUP +MODULE_STATE.arg(name), State::NORMAL).toInt());
+        setState(State(settings->value(DASHBOARD_GROUP +MODULE_STATE.arg(name), State::NORMAL).toInt()));
     } else {
         setStyleSheet("DashboardItem "
                       "{background: #2F2F2F;"
@@ -123,8 +143,8 @@ void DashboardItem::setSettings(QSettings *value)
                       "DashboardItem[isDraged=true] "
                       "{background: red;}");
         curPos = 0;
-        curHeight = 150;
-        state = State::NORMAL;
+        setCurHeight(200);
+        setState(State::NORMAL);
     }
 }
 
@@ -165,5 +185,8 @@ void DashboardItem::mouseMoveEvent(QMouseEvent *event)
 
 void DashboardItem::on_push_arrow_clicked(bool checked)
 {
-    ui->widget_hideable->setVisible(!checked);
+    if (checked) {
+        setState(State::CLOSED);
+    } else
+        setState(State::NORMAL);
 }

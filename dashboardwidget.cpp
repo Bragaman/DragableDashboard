@@ -13,8 +13,8 @@ DashboardWidget::DashboardWidget(QWidget *parent) :
 DashboardWidget::~DashboardWidget()
 {
     for (int i=0; i <  ui->verticalLayout->count(); ++i) {
-        auto obj = qobject_cast<DashboardItem* >(ui->verticalLayout->itemAt(i)->widget());
-        obj->setCurPos(i);
+        if (auto obj = qobject_cast<DashboardItem* >(ui->verticalLayout->itemAt(i)->widget()))
+            obj->setCurPos(i);
     }
 
     delete ui;
@@ -28,19 +28,21 @@ void DashboardWidget::addWidget(DashboardItem *item)
         int count = ui->verticalLayout->count();
         mapItems.insert(name , item);
         int pos = item->getCurPos();
-        if (count == 0) {
+        if (count == 1) {
             ui->verticalLayout->insertWidget(0, item);
             return;
         }
 
         for (int i=0; i < count; ++i) {
-            int widgPos = qobject_cast<DashboardItem* >(ui->verticalLayout->itemAt(i)->widget())->getCurPos();
-            if (pos <= widgPos) {
-                ui->verticalLayout->insertWidget(i, item);
-                return;
+            if (auto obj = qobject_cast<DashboardItem* >(ui->verticalLayout->itemAt(i)->widget())) {
+                int widgPos = obj->getCurPos();
+                if (pos <= widgPos) {
+                    ui->verticalLayout->insertWidget(i, item);
+                    return;
+                }
             }
         }
-        ui->verticalLayout->insertWidget(count, item);
+        ui->verticalLayout->insertWidget(0, item);
     }
 }
 
@@ -64,25 +66,27 @@ void DashboardWidget::findPos(const QPoint &newPos)
     int newY = newPos.y();
     for (int row = 0; row < rowCount; ++row) {
         auto item = ui->verticalLayout->itemAt(row);
+        auto widget = item->widget();
+        if (widget) {
+            QRect rect = item->widget()->rect();
+            int x1=0,  x2=0, y1=0, y2=0;
+            rect.getCoords(&x1,&y1,&x2,&y2);
+            int tmp = newY-y;
+            if (tmp-1 < y2) {
+                int l = (y2 - y1)/4;
+                if (widget == currentDragedWidget)
+                    return ;
+                newIndex = -1;
+                if (tmp > l*3)
+                    newIndex = row +1;
+                if (tmp <l)
+                    newIndex = row;
+                //            qDebug() << "Y pos: " <<  tmp << "; Y2 =  " << y2 << "; index = " << newIndex;
+                break;
+            }
 
-        QRect rect = item->widget()->rect();
-        int x1=0,  x2=0, y1=0, y2=0;
-        rect.getCoords(&x1,&y1,&x2,&y2);
-        int tmp = newY-y;
-        if (tmp-1 < y2) {
-            int l = (y2 - y1)/4;
-            if (item->widget() == currentDragedWidget)
-                return ;
-            newIndex = -1;
-            if (tmp > l*3)
-                newIndex = row +1;
-            if (tmp <l)
-                newIndex = row;
-            //            qDebug() << "Y pos: " <<  tmp << "; Y2 =  " << y2 << "; index = " << newIndex;
-            break;
+            y+=y2;
         }
-
-        y+=y2;
     }
 }
 
