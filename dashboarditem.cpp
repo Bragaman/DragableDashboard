@@ -69,6 +69,7 @@ void DashboardItem::setName(const QString &value)
 void DashboardItem::setCentralWidget(QWidget *widget)
 {
     ui->itemLayout->addWidget(widget, 0,0,1,3);
+
 }
 
 void DashboardItem::setPropertyIsDraged(bool is)
@@ -92,11 +93,13 @@ void DashboardItem::setState(const DashboardItem::State &value)
         setFixedHeight(curHeight);
         ui->widget_hideable->setVisible(true);
         ui->push_arrow->setChecked(false);
+        ui->resizerWidget->setVisible(true);
         break;
     case State::CLOSED:
         setFixedHeight(44);
         ui->widget_hideable->setVisible(false);
         ui->push_arrow->setChecked(true);
+        ui->resizerWidget->setVisible(false);
     default:
         break;
     }
@@ -152,6 +155,7 @@ void DashboardItem::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton ) {
         auto point = event->pos();
+
         if (ui->widgetPanel->geometry().contains(point)) {
             QDrag *drag = new QDrag(this);
             QMimeData *mimeData = new QMimeData;
@@ -163,6 +167,11 @@ void DashboardItem::mousePressEvent(QMouseEvent *event)
             drag->setPixmap(*pixmap);
             Qt::DropAction dropAction = drag->exec(Qt::MoveAction);
             setPropertyIsDraged(false);
+        }
+
+        if (ui->resizerWidget->geometry().contains(point)) {
+            resizedNow = true;
+            oldPoint = point;
         }
     }
 }
@@ -179,7 +188,17 @@ void DashboardItem::paintEvent(QPaintEvent *event)
 
 void DashboardItem::mouseMoveEvent(QMouseEvent *event)
 {
-    QWidget::mouseMoveEvent(event);
+    if (resizedNow) {
+        setCurHeight(curHeight + event->pos().y() - oldPoint.y());
+        oldPoint = event->pos();
+    } else
+        QWidget::mouseMoveEvent(event);
+}
+
+void DashboardItem::mouseReleaseEvent(QMouseEvent *event)
+{
+    resizedNow = false;
+    QWidget::mouseReleaseEvent(event);
 }
 
 
