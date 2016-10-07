@@ -4,7 +4,8 @@
 #include <QPainter>
 
 const QString DashboardItem::DASHBOARD_GROUP      = "dashboard/";
-const QString DashboardItem::MODULE_POS           = "module_%1_pos";
+const QString DashboardItem::MODULE_POS_Y           = "module_%1_pos_y";
+const QString DashboardItem::MODULE_POS_X           = "module_%1_pos_x";
 const QString DashboardItem::MODULE_HEIGHT        = "module_%1_height";
 const QString DashboardItem::MODULE_STATE         = "module_%1_state";
 
@@ -18,7 +19,8 @@ DashboardItem::DashboardItem(QWidget *parent) :
                   "}"
                   "DashboardItem[isDraged=true] "
                   "{background: red;}");
-    curPos = 0;
+    curPosY = 0;
+    curPosX = 0;
     setCurHeight(155);
     state = State::NORMAL;
     resizedNow = false;
@@ -48,7 +50,8 @@ DashboardItem::~DashboardItem()
 {
     if (settings) {
         settings->setValue(DASHBOARD_GROUP +MODULE_HEIGHT.arg(name), curHeight);
-        settings->setValue(DASHBOARD_GROUP +MODULE_POS.arg(name), curPos);
+        settings->setValue(DASHBOARD_GROUP +MODULE_POS_Y.arg(name), curPosY);
+        settings->setValue(DASHBOARD_GROUP +MODULE_POS_X.arg(name), curPosX);
         settings->setValue(DASHBOARD_GROUP +MODULE_STATE.arg(name), state);
         settings->sync();
     }
@@ -119,14 +122,14 @@ void DashboardItem::setCurHeight(int value)
     }
 }
 
-int DashboardItem::getCurPos() const
+int DashboardItem::getCurPosY() const
 {
-    return curPos;
+    return curPosY;
 }
 
-void DashboardItem::setCurPos(int value)
+void DashboardItem::setCurPosY(int value)
 {
-    curPos = value;
+    curPosY = value;
 }
 
 QSettings *DashboardItem::getSettings() const
@@ -139,7 +142,8 @@ void DashboardItem::setSettings(QSettings *value)
     settings = value;
     if (settings != nullptr) {
         setCurHeight(settings->value(DASHBOARD_GROUP +MODULE_HEIGHT.arg(name), 200).toInt());
-        curPos = settings->value(DASHBOARD_GROUP +MODULE_POS.arg(name), 0).toInt();
+        curPosY = settings->value(DASHBOARD_GROUP +MODULE_POS_Y.arg(name), 0).toInt();
+        curPosX = settings->value(DASHBOARD_GROUP +MODULE_POS_X.arg(name), 0).toInt();
         setState(State(settings->value(DASHBOARD_GROUP +MODULE_STATE.arg(name), State::NORMAL).toInt()));
     } else {
         setStyleSheet("DashboardItem "
@@ -147,10 +151,21 @@ void DashboardItem::setSettings(QSettings *value)
                       "}"
                       "DashboardItem[isDraged=true] "
                       "{background: red;}");
-        curPos = 0;
+        curPosY = 0;
+        curPosX = 0;
         setCurHeight(200);
         setState(State::NORMAL);
     }
+}
+
+int DashboardItem::getCurPosX() const
+{
+    return curPosX;
+}
+
+void DashboardItem::setCurPosX(int value)
+{
+    curPosX = value;
 }
 
 void DashboardItem::mousePressEvent(QMouseEvent *event)

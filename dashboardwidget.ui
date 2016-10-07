@@ -16,7 +16,7 @@
   <property name="windowTitle">
    <string>Widget</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1">
+  <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0">
    <item>
     <widget class="QScrollArea" name="scrollArea">
      <property name="widgetResizable">
@@ -46,6 +46,9 @@
         </spacer>
        </item>
       </layout>
+      <zorder>verticalSpacer</zorder>
+      <zorder>verticalSpacer_2</zorder>
+      <zorder>verticalSpacer</zorder>
      </widget>
     </widget>
    </item>

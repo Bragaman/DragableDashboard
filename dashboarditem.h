@@ -21,7 +21,8 @@ class DashboardItem : public QWidget
 public:
 
     static const QString DASHBOARD_GROUP;
-    static const QString MODULE_POS;
+    static const QString MODULE_POS_Y;
+    static const QString MODULE_POS_X;
     static const QString MODULE_HEIGHT;
     static const QString MODULE_STATE;
 
@@ -47,11 +48,14 @@ public:
     int getCurHeight() const;
     void setCurHeight(int value);
 
-    int getCurPos() const;
-    void setCurPos(int value);
+    int getCurPosY() const;
+    void setCurPosY(int value);
 
     QSettings *getSettings() const;
     void setSettings(QSettings *value);
+
+    int getCurPosX() const;
+    void setCurPosX(int value);
 
 private:
     Ui::DashboardItem *ui;
@@ -59,7 +63,8 @@ private:
     QString name;
     State state;
     int curHeight;
-    int curPos;
+    int curPosY;
+    int curPosX;
 
     QSettings *settings;
 

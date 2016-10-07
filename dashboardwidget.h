@@ -30,12 +30,15 @@ private:
     bool moveWidget(const QPoint &newPos, QWidget *widget);
     void showDropPos(const QPoint &newPos);
     void findPos(const QPoint &newPos);
-
+    void updateCurLayout(int x);
 
     QMap<QString, QWidget*> mapItems;
     int newIndex;
     int oldIndex;
     QWidget* currentDragedWidget;
+    QVBoxLayout *currentLayout;
+    QVBoxLayout *oldLayout;
+
 
     void hideItem(QWidget *widget);
 
