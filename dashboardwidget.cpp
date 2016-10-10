@@ -9,6 +9,7 @@ DashboardWidget::DashboardWidget(QWidget *parent) :
     ui->setupUi(this);
     newIndexY = -1;
     oldIndexY = -1;
+    ui->comboBoxItems->addItem("-------------", "");
 }
 
 DashboardWidget::~DashboardWidget()
