@@ -13,6 +13,7 @@ DashboardWidget::DashboardWidget(QWidget *parent) :
 
 DashboardWidget::~DashboardWidget()
 {
+    qDebug() << "------------";
     for (int i=0; i <  ui->verticalLayout->count(); ++i) {
         if (auto hLay = dynamic_cast<QHBoxLayout*>(ui->verticalLayout->itemAt(i))) {
             int count = hLay->count();
@@ -20,7 +21,7 @@ DashboardWidget::~DashboardWidget()
                 if (auto obj = qobject_cast<DashboardItem* >(hLay->itemAt(j)->widget())) {
                     obj->setCurPosY(i);
                     obj->setCurPosX(j);
-//                    qDebug() << obj->getName() << "pos y =  "<< i <<" pos x = "<< j;
+                    qDebug() << obj->getName() << "pos y =  "<< i <<" pos x = "<< j;
                 }
         }
     }
@@ -39,7 +40,7 @@ void DashboardWidget::addWidget(DashboardItem *item)
         mapItems.insert(name , item);
         int posY = item->getCurPosY();
         int posX = item->getCurPosX();
-//        qDebug() << name << "pos y =  "<< posY <<" pos x = "<< posX;
+        qDebug() << name << "pos y =  "<< posY <<" pos x = "<< posX;
         int widgPosY = 0;
         for (int i=0; i < vCount; ++i) {
             if (auto hLay = dynamic_cast<QHBoxLayout*>(vLay->itemAt(i))) {
@@ -49,17 +50,21 @@ void DashboardWidget::addWidget(DashboardItem *item)
                         if (auto obj = qobject_cast<DashboardItem* >(hLay->itemAt(j)->widget())) {
                             widgPosY = obj->getCurPosY();
                             int widgPosX = obj->getCurPosX();
-                            if (posY <= widgPosY)
+                            if (posY == widgPosY)
                                 if (posX <= widgPosX) {
                                     insertWidget(vLay, i, j, item);
                                     return;
                                 }
                         }
                     }
-                    if (posY <= widgPosY) {
+                    if (posY == widgPosY) {
                             insertWidget(vLay, i,  hCount, item);
                             return;
                         }
+                    if (posY < widgPosY) {
+                        insertWidget(vLay, i,  -1, item);
+                        return;
+                    }
                 }
             }
         }
@@ -185,6 +190,22 @@ int DashboardWidget::findIndex(QLayout *lay, const QPoint &pos)
     return -1;
 }
 
+void DashboardWidget::resizeItems(QHBoxLayout *hLay, int xHeight)
+{
+    int maxSize = xHeight;
+    int count = hLay->count();
+    for (int i =0; i < count; ++i) {
+        auto item = hLay->itemAt(i)->widget();
+        int h = item->height();
+        if (h < maxSize)
+            item->setFixedHeight(maxSize);
+        if (h > maxSize ) {
+            maxSize = h;
+            i = -1;
+        }
+    }
+}
+
 
 void DashboardWidget::insertWidget(QVBoxLayout *vLay, int yPos, int xPos, QWidget *widget)
 {
@@ -196,6 +217,7 @@ void DashboardWidget::insertWidget(QVBoxLayout *vLay, int yPos, int xPos, QWidge
     if (auto hLay = dynamic_cast<QHBoxLayout*>(vLay->itemAt(yPos))) {
         hLay->removeWidget(widget);
         hLay->insertWidget(xPos, widget);
+        resizeItems(hLay, widget->height());
         hLay->update();
     }
 
@@ -216,7 +238,7 @@ bool DashboardWidget::moveWidget(const QPoint& newPos, QWidget* widget)
         if (newIndexY == -1)
             newIndexY = 0;
 
-        qDebug()  << "drop pos: " << newIndexY << " : " << newIndexX;
+//        qDebug()  << "drop pos: " << newIndexY << " : " << newIndexX;
         auto lay = currentLayout;
 
         insertWidget(lay, newIndexY, newIndexX, widget);

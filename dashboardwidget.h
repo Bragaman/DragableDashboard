@@ -33,6 +33,7 @@ private:
 
     int findIndex(QLayout *lay, const QPoint &pos);
 
+    void resizeItems(QHBoxLayout *hLay, int xHeight);
 
     void insertWidget(QVBoxLayout *vLay, int yPos, int xPos, QWidget *widget);
 
