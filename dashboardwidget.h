@@ -28,9 +28,12 @@ private:
     void setWidgetOnLayout(QWidget *widget, int index = 0);
     bool moveWidget(const QPoint &newPos, QWidget *widget);
     void showDropPos(const QPoint &newPos);
+
     bool findPos(const QPoint &newPos);
+    void fixPos();
 
     int findIndex(QLayout *lay, const QPoint &pos);
+
 
     void insertWidget(QVBoxLayout *vLay, int yPos, int xPos, QWidget *widget);
 
@@ -45,6 +48,14 @@ private:
 
 
     void hideItem(QWidget *widget);
+
+    void moveDown(int row);
+    
+    void moveUp(int row);
+
+    void moveLeft(int row, int column);
+
+    void moveRight(int column, int row);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event) override;
