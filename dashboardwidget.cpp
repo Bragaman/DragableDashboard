@@ -19,7 +19,8 @@ DashboardWidget::~DashboardWidget()
             for (int j=0; j < count; ++j)
                 if (auto obj = qobject_cast<DashboardItem* >(hLay->itemAt(j)->widget())) {
                     obj->setCurPosY(i);
-                    obj->setCurPosX(j-1);
+                    obj->setCurPosX(j);
+//                    qDebug() << obj->getName() << "pos y =  "<< i <<" pos x = "<< j;
                 }
         }
     }
@@ -31,26 +32,38 @@ DashboardWidget::~DashboardWidget()
 void DashboardWidget::addWidget(DashboardItem *item)
 {
     auto name = item->getName();
-    auto lay = ui->verticalLayout;
+    auto vLay = ui->verticalLayout;
 
     if (!mapItems.contains(name)) {
-        int count = lay->count();
+        int vCount = vLay->count();
         mapItems.insert(name , item);
-        int pos = item->getCurPosY();
-        qDebug() << name << ": "<< pos;
-        for (int i=0; i < count; ++i) {
-            if (auto hLay = dynamic_cast<QHBoxLayout*>(lay->itemAt(i))) {
-                if (hLay->count() != 0)
-                    if (auto obj = qobject_cast<DashboardItem* >(hLay->itemAt(0)->widget())) {
-                        int widgPos = obj->getCurPosY();
-                        if (pos <= widgPos) {
-                            insertWidget(lay, i, -1, item);
-                            return;
+        int posY = item->getCurPosY();
+        int posX = item->getCurPosX();
+//        qDebug() << name << "pos y =  "<< posY <<" pos x = "<< posX;
+        int widgPosY = 0;
+        for (int i=0; i < vCount; ++i) {
+            if (auto hLay = dynamic_cast<QHBoxLayout*>(vLay->itemAt(i))) {
+                int hCount = hLay->count();
+                if (hCount != 0) {
+                    for (int j =0; j < hCount; ++j ) {
+                        if (auto obj = qobject_cast<DashboardItem* >(hLay->itemAt(j)->widget())) {
+                            widgPosY = obj->getCurPosY();
+                            int widgPosX = obj->getCurPosX();
+                            if (posY <= widgPosY)
+                                if (posX <= widgPosX) {
+                                    insertWidget(vLay, i, j, item);
+                                    return;
+                                }
                         }
                     }
+                    if (posY <= widgPosY) {
+                            insertWidget(vLay, i,  hCount, item);
+                            return;
+                        }
+                }
             }
         }
-        insertWidget(lay, count -1, -1, item);
+        insertWidget(vLay, vCount -1, -1, item);
     }
 }
 
@@ -195,6 +208,7 @@ void DashboardWidget::insertWidget(QVBoxLayout *vLay, int yPos, int xPos, QWidge
 
     vLay->update();
 }
+
 
 bool DashboardWidget::moveWidget(const QPoint& newPos, QWidget* widget)
 {
