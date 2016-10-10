@@ -26,15 +26,19 @@ private:
     Ui::Widget *ui;
 
     void setWidgetOnLayout(QWidget *widget, int index = 0);
-
     bool moveWidget(const QPoint &newPos, QWidget *widget);
     void showDropPos(const QPoint &newPos);
-    void findPos(const QPoint &newPos);
-    void updateCurLayout(int x);
+    bool findPos(const QPoint &newPos);
+
+    int findIndex(QLayout *lay, const QPoint &pos);
+
+    void insertWidget(QVBoxLayout *vLay, int yPos, int xPos, QWidget *widget);
 
     QMap<QString, QWidget*> mapItems;
-    int newIndex;
-    int oldIndex;
+    int newIndexY;
+    int newIndexX;
+    int oldIndexY;
+    int oldIndexX;
     QWidget* currentDragedWidget;
     QVBoxLayout *currentLayout;
     QVBoxLayout *oldLayout;

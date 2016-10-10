@@ -7,15 +7,21 @@ DashboardWidget::DashboardWidget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    newIndex = -1;
-    oldIndex = -1;
+    newIndexY = -1;
+    oldIndexY = -1;
 }
 
 DashboardWidget::~DashboardWidget()
 {
     for (int i=0; i <  ui->verticalLayout->count(); ++i) {
-        if (auto obj = qobject_cast<DashboardItem* >(ui->verticalLayout->itemAt(i)->widget()))
-            obj->setCurPosY(i);
+        if (auto hLay = dynamic_cast<QHBoxLayout*>(ui->verticalLayout->itemAt(i))) {
+            int count = hLay->count();
+            for (int j=0; j < count; ++j)
+                if (auto obj = qobject_cast<DashboardItem* >(hLay->itemAt(j)->widget())) {
+                    obj->setCurPosY(i);
+                    obj->setCurPosX(j-1);
+                }
+        }
     }
 
     delete ui;
@@ -31,17 +37,20 @@ void DashboardWidget::addWidget(DashboardItem *item)
         int count = lay->count();
         mapItems.insert(name , item);
         int pos = item->getCurPosY();
-
+        qDebug() << name << ": "<< pos;
         for (int i=0; i < count; ++i) {
-            if (auto obj = qobject_cast<DashboardItem* >(lay->itemAt(i)->widget())) {
-                int widgPos = obj->getCurPosY();
-                if (pos <= widgPos) {
-                    lay->insertWidget(i, item);
-                    return;
-                }
+            if (auto hLay = dynamic_cast<QHBoxLayout*>(lay->itemAt(i))) {
+                if (hLay->count() != 0)
+                    if (auto obj = qobject_cast<DashboardItem* >(hLay->itemAt(0)->widget())) {
+                        int widgPos = obj->getCurPosY();
+                        if (pos <= widgPos) {
+                            insertWidget(lay, i, -1, item);
+                            return;
+                        }
+                    }
             }
         }
-        lay->insertWidget(count - 1, item);
+        insertWidget(lay, count -1, -1, item);
     }
 }
 
@@ -50,71 +59,137 @@ void DashboardWidget::addWidget(DashboardItem *item)
 bool DashboardWidget::moveWidget(const QPoint& newPos, QWidget* widget)
 {
     findPos(newPos);
-    if (newIndex == -1)
-        newIndex = oldIndex;
+    if (newIndexY == -1)
+        newIndexY = 0;
 
     auto lay = currentLayout;
 
-    lay->insertWidget(newIndex, widget);
-    lay->update();
+    insertWidget(lay, newIndexY, newIndexX, widget);
+
     return true;
 }
 
-void DashboardWidget::findPos(const QPoint &newPos)
+bool DashboardWidget::findPos(const QPoint &newPos)
 {
-    updateCurLayout(newPos.x());
-    auto lay = currentLayout;
+    auto vLay = currentLayout;
 
-    int rowCount = lay->count();
-    int y =0;
+    int row = findIndex(vLay, newPos);
+    if (row == -1)
+        return false;
+    if (row == vLay->count() - 1)
+        return false;
+    auto hLay = vLay->itemAt(row)->layout();
 
-    int newY = newPos.y();
-    for (int row = 0; row < rowCount; ++row) {
-        auto item = lay->itemAt(row);
-        auto widget = item->widget();
-        if (widget) {
-            QRect rect = item->widget()->rect();
-            int x1=0,  x2=0, y1=0, y2=0;
-            rect.getCoords(&x1,&y1,&x2,&y2);
-            int tmp = newY-y;
-            if (tmp-1 < y2) {
-                int l = (y2 - y1)/4;
-                if (widget == currentDragedWidget)
-                    return ;
-                newIndex = -1;
-                if (tmp > l*3)
-                    newIndex = row +1;
-                if (tmp <l)
-                    newIndex = row;
-                return;
-            }
+    int column = findIndex(hLay, newPos);
+    if (column == -1)
+        return false;
+    auto item = hLay->itemAt(column);
+    if (item->widget() == currentDragedWidget)
+        return false;
 
-            y+=y2;
+    auto rect = item->geometry();
+    int x,y,w,h;
+    rect.getRect(&x, &y, &w, &h);
+    int nY = newPos.y();
+    int nX = newPos.x();
+
+    qDebug() << row << " : " << column;
+
+    newIndexY = row;
+    newIndexX = column;
+
+    if (nY > y + h*3/4) {
+        if (nX > x + w/4 and nX < x + w*3/4) {
+            qDebug() << "down";
+            newIndexY = row + 1;
+            newIndexX = -1;
+            return true;
+        }
+        return false;
+    }
+
+    if (nY < y + h/4) {
+        qDebug() << "up";
+        if (nX > x + w/4 and nX < x + w*3/4) {
+            newIndexY = row - 1;
+            newIndexX = -1;
+            return true;
+        }
+        return false;
+    }
+
+    if (nX < x + w/4) {
+        qDebug() << "left";
+        if (nY > y + h/4 and nY < y + h*3/4) {
+            newIndexY = row;
+            newIndexX = column -1;
+            if (newIndexX == -1)
+                newIndexX = 0;
+            return true;
+        }
+        return false;
+    }
+
+    if (nX > x + w*3/4) {
+        qDebug() << "right";
+        if (nY > y + h/4 and nY < y + h*3/4) {
+            newIndexY = row;
+            newIndexX = column + 1;
+            return true;
+        }
+        return false;
+    }
+}
+
+int DashboardWidget::findIndex(QLayout *lay, const QPoint &pos)
+{
+    if (lay) {
+        int count = lay->count();
+        for (int i =0; i < count; ++i) {
+            auto item = lay->itemAt(i);
+            QRect rect = item->geometry();
+            if (rect.contains(pos))
+                return i;
+        }
+    }
+    return -1;
+}
+
+
+void DashboardWidget::insertWidget(QVBoxLayout *vLay, int yPos, int xPos, QWidget *widget)
+{
+
+    if (xPos == -1) {
+        vLay->insertLayout(yPos, new QHBoxLayout());
+        xPos = 0;
+    }
+    if (auto hLay = dynamic_cast<QHBoxLayout*>(vLay->itemAt(yPos))) {
+        hLay->insertWidget(xPos, widget);
+        hLay->update();
+    }
+
+    for (int i=0; i <  vLay->count(); ++i) {
+        if (auto hLay = dynamic_cast<QHBoxLayout*>(vLay->itemAt(i))) {
+            if (hLay->count() == 0)
+                vLay->removeItem(hLay);
         }
     }
 
-    newIndex = 0;
-}
-
-void DashboardWidget::updateCurLayout(int x)
-{
-    if (x > width()/2) {
-        currentLayout = ui->verticalLayout;
-    } else
-        currentLayout = ui->verticalLayout;
+    vLay->update();
 }
 
 void DashboardWidget::showDropPos(const QPoint &newPos)
 {
     auto lay = currentLayout;
-
-    findPos(newPos);
-    if (newIndex == -1) {
-        hideItem(currentDragedWidget);
-    } else {
-        lay->insertWidget(newIndex, currentDragedWidget);
-        lay->update();
-        currentDragedWidget->show();
+    if (findPos(newPos) ){
+        if (newIndexY == -1) {
+            newIndexY = 0;
+            insertWidget(lay, oldIndexY, newIndexX, currentDragedWidget);
+            currentDragedWidget->show();
+        } else {
+            insertWidget(lay, newIndexY, newIndexX, currentDragedWidget);
+            currentDragedWidget->show();
+        }
     }
 
 }
@@ -148,7 +223,17 @@ void DashboardWidget::hideItem(QWidget* widget)
     auto lay = currentLayout;
 
     widget->hide();
+
+    for (int i=0; i <  lay->count(); ++i) {
+        if (auto hLay = dynamic_cast<QHBoxLayout*>(lay->itemAt(i))) {
+            hLay->removeWidget(widget);
+            if (hLay->count() == 0)
+                lay->removeItem(hLay);
+        }
+    }
+
     lay->removeWidget(widget);
+
     lay->update();
 }
 
@@ -158,14 +243,16 @@ void DashboardWidget::dragEnterEvent(QDragEnterEvent *event)
         auto mimeData = event->mimeData();
         QString nameWidget(mimeData->data("dashboard/item"));
         currentDragedWidget = mapItems.value(nameWidget);
-        oldIndex = ui->verticalLayout->indexOf(currentDragedWidget);
-        oldLayout = ui->verticalLayout;
-        if (oldIndex == -1) {
-            oldIndex = ui->verticalLayout->indexOf(currentDragedWidget);
-            oldLayout = ui->verticalLayout;
+        currentLayout = ui->verticalLayout;
+        auto point = event->pos();
+        int tmp = findIndex(currentLayout, point);
+        if (tmp != -1) {
+            oldIndexY = tmp;
+            oldIndexX = findIndex(currentLayout->itemAt(oldIndexY)->layout(), point);
+            newIndexY = oldIndexY;
+            newIndexX = oldIndexX;
         }
-        currentLayout = oldLayout;
-        hideItem(currentDragedWidget);
+        //        hideItem(currentDragedWidget);
 
 
         event->acceptProposedAction();
