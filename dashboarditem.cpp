@@ -28,7 +28,7 @@ DashboardItem::DashboardItem(QWidget *parent) :
     setSettings(nullptr);
 }
 
-DashboardItem::DashboardItem(QWidget *central, const QString &name, QSettings *settings, QWidget *parent) :
+DashboardItem::DashboardItem(QWidget *central, const QString &name, const QString &trName, QSettings *settings, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::DashboardItem)
 
@@ -39,6 +39,7 @@ DashboardItem::DashboardItem(QWidget *central, const QString &name, QSettings *s
                   "DashboardItem[isDraged=true] "
                   "{border: 3px solid red;}");
     ui->setupUi(this);
+    setLabelText(trName);
     setName(name);
     setCentralWidget(central);
     setPropertyIsDraged(false);
@@ -66,7 +67,6 @@ QString DashboardItem::getName() const
 void DashboardItem::setName(const QString &value)
 {
     name = value;
-    ui->moduleNameLabel->setText(name);
 }
 
 void DashboardItem::setCentralWidget(QWidget *widget)
@@ -97,16 +97,21 @@ void DashboardItem::setState(const DashboardItem::State &value)
         ui->widget_hideable->setVisible(true);
         ui->push_arrow->setChecked(false);
         ui->resizerWidget->setVisible(true);
+        setVisible(true);
         break;
     case State::CLOSED:
         setFixedHeight(44);
         ui->widget_hideable->setVisible(false);
         ui->push_arrow->setChecked(true);
         ui->resizerWidget->setVisible(false);
+        setVisible(true);
+    case State::HIDDEN:
+        setVisible(false);
     default:
         break;
     }
     ui->push_arrow->blockSignals(false);
+    emit changeState(state);
 }
 
 int DashboardItem::getCurHeight() const
@@ -168,6 +173,18 @@ void DashboardItem::setCurPosX(int value)
     curPosX = value;
 }
 
+QString DashboardItem::getLabelText() const
+{
+    return labelText;
+}
+
+void DashboardItem::setLabelText(const QString &value)
+{
+    labelText = value;
+    ui->moduleNameLabel->setText(labelText);
+
+}
+
 void DashboardItem::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton ) {
@@ -225,4 +242,9 @@ void DashboardItem::on_push_arrow_clicked(bool checked)
         setState(State::CLOSED);
     } else
         setState(State::NORMAL);
+}
+
+void DashboardItem::on_pushButton_clicked()
+{
+    setState(State::HIDDEN);
 }

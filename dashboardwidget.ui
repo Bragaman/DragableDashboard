@@ -16,7 +16,7 @@
   <property name="windowTitle">
    <string>Widget</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0">
+  <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
    <item>
     <widget class="QScrollArea" name="scrollArea">
      <property name="widgetResizable">
@@ -28,7 +28,7 @@
         <x>0</x>
         <y>0</y>
         <width>637</width>
-        <height>374</height>
+        <height>330</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -47,10 +47,38 @@
        </item>
       </layout>
       <zorder>verticalSpacer</zorder>
-      <zorder>verticalSpacer_2</zorder>
-      <zorder>verticalSpacer</zorder>
      </widget>
     </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="topMargin">
+      <number>10</number>
+     </property>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Add widget</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBoxItems"/>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

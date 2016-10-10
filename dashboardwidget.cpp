@@ -33,42 +33,28 @@ DashboardWidget::~DashboardWidget()
 void DashboardWidget::addWidget(DashboardItem *item)
 {
     auto name = item->getName();
-    auto vLay = ui->verticalLayout;
-
     if (!mapItems.contains(name)) {
-        int vCount = vLay->count();
-        mapItems.insert(name , item);
-        int posY = item->getCurPosY();
-        int posX = item->getCurPosX();
-        qDebug() << name << "pos y =  "<< posY <<" pos x = "<< posX;
-        int widgPosY = 0;
-        for (int i=0; i < vCount; ++i) {
-            if (auto hLay = dynamic_cast<QHBoxLayout*>(vLay->itemAt(i))) {
-                int hCount = hLay->count();
-                if (hCount != 0) {
-                    for (int j =0; j < hCount; ++j ) {
-                        if (auto obj = qobject_cast<DashboardItem* >(hLay->itemAt(j)->widget())) {
-                            widgPosY = obj->getCurPosY();
-                            int widgPosX = obj->getCurPosX();
-                            if (posY == widgPosY)
-                                if (posX <= widgPosX) {
-                                    insertWidget(vLay, i, j, item);
-                                    return;
-                                }
-                        }
-                    }
-                    if (posY == widgPosY) {
-                            insertWidget(vLay, i,  hCount, item);
-                            return;
-                        }
-                    if (posY < widgPosY) {
-                        insertWidget(vLay, i,  -1, item);
-                        return;
-                    }
-                }
+        connect(item, &DashboardItem::changeState, this, &DashboardWidget::onChangeItemState);
+
+        initOnLayout(item);
+        emit item->changeState(item->getState());
+    }
+}
+
+void DashboardWidget::onChangeItemState(DashboardItem::State state)
+{
+    auto item = qobject_cast<DashboardItem*>(sender());
+    if (state == DashboardItem::State::HIDDEN) {
+        item->setVisible(false);
+        ui->comboBoxItems->addItem(item->getLabelText(), item->getName());
+    } else {
+        item->setVisible(true);
+        int count = ui->comboBoxItems->count();
+        for (int i =0; i < count; ++i)
+            if (ui->comboBoxItems->itemData(i) == item->getName()) {
+                ui->comboBoxItems->removeItem(i);
+                break;
             }
-        }
-        insertWidget(vLay, vCount -1, -1, item);
     }
 }
 
@@ -206,6 +192,45 @@ void DashboardWidget::resizeItems(QHBoxLayout *hLay, int xHeight)
     }
 }
 
+void DashboardWidget::initOnLayout(DashboardItem *item)
+{
+    auto name = item->getName();
+    auto vLay = ui->verticalLayout;
+    int vCount = vLay->count();
+    mapItems.insert(name , item);
+    int posY = item->getCurPosY();
+    int posX = item->getCurPosX();
+    qDebug() << name << "pos y =  "<< posY <<" pos x = "<< posX;
+    int widgPosY = 0;
+    for (int i=0; i < vCount; ++i) {
+        if (auto hLay = dynamic_cast<QHBoxLayout*>(vLay->itemAt(i))) {
+            int hCount = hLay->count();
+            if (hCount != 0) {
+                for (int j =0; j < hCount; ++j ) {
+                    if (auto obj = qobject_cast<DashboardItem* >(hLay->itemAt(j)->widget())) {
+                        widgPosY = obj->getCurPosY();
+                        int widgPosX = obj->getCurPosX();
+                        if (posY == widgPosY)
+                            if (posX <= widgPosX) {
+                                insertWidget(vLay, i, j, item);
+                                return;
+                            }
+                    }
+                }
+                if (posY == widgPosY) {
+                        insertWidget(vLay, i,  hCount, item);
+                        return;
+                    }
+                if (posY < widgPosY) {
+                    insertWidget(vLay, i,  -1, item);
+                    return;
+                }
+            }
+        }
+    }
+    insertWidget(vLay, vCount -1, -1, item);
+}
+
 
 void DashboardWidget::insertWidget(QVBoxLayout *vLay, int yPos, int xPos, QWidget *widget)
 {
@@ -235,10 +260,10 @@ void DashboardWidget::insertWidget(QVBoxLayout *vLay, int yPos, int xPos, QWidge
 bool DashboardWidget::moveWidget(const QPoint& newPos, QWidget* widget)
 {
     if (findPos(newPos)) {
+        fixPos();
         if (newIndexY == -1)
             newIndexY = 0;
 
-//        qDebug()  << "drop pos: " << newIndexY << " : " << newIndexX;
         auto lay = currentLayout;
 
         insertWidget(lay, newIndexY, newIndexX, widget);
@@ -328,3 +353,13 @@ void DashboardWidget::dragEnterEvent(QDragEnterEvent *event)
         event->acceptProposedAction();
     }
 }
+
+void DashboardWidget::on_comboBoxItems_activated(int index)
+{
+    auto name = ui->comboBoxItems->itemData(index).toString();
+    auto obj = mapItems.value(name, nullptr);
+    if (obj)
+        obj->setState(DashboardItem::State::NORMAL);
+}
+
+

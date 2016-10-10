@@ -28,16 +28,18 @@ private:
     bool moveWidget(const QPoint &newPos, QWidget *widget);
     void showDropPos(const QPoint &newPos);
 
+    void insertWidget(QVBoxLayout *vLay, int yPos, int xPos, QWidget *widget);
+
     bool findPos(const QPoint &newPos);
     void fixPos();
 
     int findIndex(QLayout *lay, const QPoint &pos);
-
     void resizeItems(QHBoxLayout *hLay, int xHeight);
 
-    void insertWidget(QVBoxLayout *vLay, int yPos, int xPos, QWidget *widget);
+    void initOnLayout(DashboardItem *item);
 
-    QMap<QString, QWidget*> mapItems;
+
+    QMap<QString, DashboardItem*> mapItems;
     int newIndexY;
     int newIndexX;
     int oldIndexY;
@@ -62,6 +64,10 @@ protected:
     void dropEvent(QDropEvent* event) override;
     void dragMoveEvent(QDragMoveEvent *event) override;
     void dragLeaveEvent(QDragLeaveEvent *event) override;
+private slots:
+    void on_comboBoxItems_activated(int index);
+    void onChangeItemState(DashboardItem::State state);
+
 };
 
 #endif // WIDGET_H

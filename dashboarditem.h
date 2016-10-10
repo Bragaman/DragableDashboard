@@ -33,7 +33,8 @@ public:
     };
 
     explicit DashboardItem(QWidget *parent = 0);
-    explicit DashboardItem(QWidget *central, const QString &name, QSettings *settings, QWidget *parent = 0);
+    explicit DashboardItem(QWidget *central, const QString &name, const QString &trName,
+                           QSettings *settings, QWidget *parent = 0);
 
     ~DashboardItem();
 
@@ -57,10 +58,14 @@ public:
     int getCurPosX() const;
     void setCurPosX(int value);
 
+    QString getLabelText() const;
+    void setLabelText(const QString &value);
+
 private:
     Ui::DashboardItem *ui;
 
     QString name;
+    QString labelText;
     State state;
     int curHeight;
     int curPosY;
@@ -77,11 +82,16 @@ private slots:
     void on_push_arrow_clicked(bool checked);
 
     // QWidget interface
+    void on_pushButton_clicked();
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+
+signals:
+    void changeState(State );
 };
 
 #endif // DASHBOARDITEM_H
