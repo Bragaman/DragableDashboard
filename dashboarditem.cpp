@@ -4,8 +4,8 @@
 #include <QPainter>
 
 const QString DashboardItem::DASHBOARD_GROUP      = "dashboard/";
-const QString DashboardItem::MODULE_POS_Y           = "module_%1_pos_y";
-const QString DashboardItem::MODULE_POS_X           = "module_%1_pos_x";
+const QString DashboardItem::MODULE_POS_Y         = "module_%1_pos_y";
+const QString DashboardItem::MODULE_POS_X         = "module_%1_pos_x";
 const QString DashboardItem::MODULE_HEIGHT        = "module_%1_height";
 const QString DashboardItem::MODULE_STATE         = "module_%1_state";
 
@@ -121,10 +121,12 @@ int DashboardItem::getCurHeight() const
 
 void DashboardItem::setCurHeight(int value)
 {
-    if (value > 42) {
-        curHeight = value;
-        setFixedHeight(curHeight);
-    }
+    if (value > 42)
+        if (state != State::CLOSED) {
+            curHeight = value;
+            setFixedHeight(curHeight);
+        }
+
 }
 
 int DashboardItem::getCurPosY() const

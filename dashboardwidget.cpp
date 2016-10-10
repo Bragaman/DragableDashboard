@@ -182,13 +182,15 @@ void DashboardWidget::resizeItems(QHBoxLayout *hLay, int xHeight)
     int maxSize = xHeight;
     int count = hLay->count();
     for (int i =0; i < count; ++i) {
-        auto item = hLay->itemAt(i)->widget();
-        int h = item->height();
-        if (h < maxSize)
-            item->setFixedHeight(maxSize);
-        if (h > maxSize ) {
-            maxSize = h;
-            i = -1;
+
+        if (auto item = qobject_cast<DashboardItem*>(hLay->itemAt(i)->widget())) {
+            int h = item->getCurHeight();
+            if (h < maxSize)
+                item->setCurHeight(maxSize);
+            if (h > maxSize ) {
+                maxSize = h;
+                i = -1;
+            }
         }
     }
 }
@@ -219,9 +221,9 @@ void DashboardWidget::initOnLayout(DashboardItem *item)
                     }
                 }
                 if (posY == widgPosY) {
-                        insertWidget(vLay, i,  hCount, item);
-                        return;
-                    }
+                    insertWidget(vLay, i,  hCount, item);
+                    return;
+                }
                 if (posY < widgPosY) {
                     insertWidget(vLay, i,  -1, item);
                     return;
@@ -349,7 +351,6 @@ void DashboardWidget::dragEnterEvent(QDragEnterEvent *event)
             newIndexY = oldIndexY;
             newIndexX = oldIndexX;
         }
-
 
         event->acceptProposedAction();
     }
