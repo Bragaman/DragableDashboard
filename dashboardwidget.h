@@ -7,7 +7,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLayoutItem>
-#include <dashboarditem.h>
+#include "dashboarditem.h"
 namespace Ui {
 class Widget;
 }

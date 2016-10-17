@@ -201,7 +201,7 @@ void DashboardItem::mousePressEvent(QMouseEvent *event)
             mimeData->setData("dashboard/item", name.toUtf8() );
             drag->setMimeData(mimeData);
             drag->setPixmap(*pixmap);
-            Qt::DropAction dropAction = drag->exec(Qt::MoveAction);
+            drag->exec(Qt::MoveAction);
             setPropertyIsDraged(false);
         }
 

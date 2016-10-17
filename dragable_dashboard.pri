@@ -1,11 +1,12 @@
+
 SOURCES += \
-    dashboarditem.cpp \
-    dashboardwidget.cpp
+    $$PWD/dashboarditem.cpp \
+    $$PWD/dashboardwidget.cpp
 
 HEADERS  += \
-    dashboarditem.h \
-    dashboardwidget.h
+    $$PWD/dashboarditem.h \
+    $$PWD/dashboardwidget.h
 
 FORMS    += \
-    dashboarditem.ui \
-    dashboardwidget.ui
+    $$PWD/dashboarditem.ui \
+    $$PWD/dashboardwidget.ui
