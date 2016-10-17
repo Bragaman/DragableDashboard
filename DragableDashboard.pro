@@ -11,15 +11,5 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = DragableDashboard
 TEMPLATE = app
 
-
-SOURCES += main.cpp\
-    dashboarditem.cpp \
-    dashboardwidget.cpp
-
-HEADERS  += \
-    dashboarditem.h \
-    dashboardwidget.h
-
-FORMS    += \
-    dashboarditem.ui \
-    dashboardwidget.ui
+include(dragable_dashboard.pri)
+SOURCES += main.cpp
