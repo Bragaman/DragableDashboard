@@ -33,12 +33,8 @@ DashboardItem::DashboardItem(QWidget *central, const QString &name, const QStrin
     ui(new Ui::DashboardItem)
 
 {
-    setStyleSheet("DashboardItem "
-                  "{background: #2F2F2F;"
-                  "}"
-                  "DashboardItem[isDraged=true] "
-                  "{border: 3px solid red;}");
     ui->setupUi(this);
+    setObjectName("DashboardItem");
     setLabelText(trName);
     setName(name);
     setCentralWidget(central);
@@ -246,7 +242,7 @@ void DashboardItem::on_push_arrow_clicked(bool checked)
         setState(State::NORMAL);
 }
 
-void DashboardItem::on_pushButton_clicked()
+void DashboardItem::on_btnClose_clicked()
 {
     setState(State::HIDDEN);
 }

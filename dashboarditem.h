@@ -82,7 +82,7 @@ private slots:
     void on_push_arrow_clicked(bool checked);
 
     // QWidget interface
-    void on_pushButton_clicked();
+    void on_btnClose_clicked();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

@@ -14,7 +14,6 @@ DashboardWidget::DashboardWidget(QWidget *parent) :
 
 DashboardWidget::~DashboardWidget()
 {
-    qDebug() << "------------";
     for (int i=0; i <  ui->verticalLayout->count(); ++i) {
         if (auto hLay = dynamic_cast<QHBoxLayout*>(ui->verticalLayout->itemAt(i))) {
             int count = hLay->count();
@@ -22,7 +21,6 @@ DashboardWidget::~DashboardWidget()
                 if (auto obj = qobject_cast<DashboardItem* >(hLay->itemAt(j)->widget())) {
                     obj->setCurPosY(i);
                     obj->setCurPosX(j);
-                    qDebug() << obj->getName() << "pos y =  "<< i <<" pos x = "<< j;
                 }
         }
     }
