@@ -117,12 +117,12 @@ int DashboardItem::getCurHeight() const
 
 void DashboardItem::setCurHeight(int value)
 {
-    if (value > 42)
+    if (value > 42) {
         if (state != State::CLOSED) {
             curHeight = value;
             setFixedHeight(curHeight);
         }
-
+    }
 }
 
 int DashboardItem::getCurPosY() const
