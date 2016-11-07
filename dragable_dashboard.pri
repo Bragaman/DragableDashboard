@@ -1,3 +1,4 @@
+INCLUDEPATH += $$PWD
 
 SOURCES += \
     $$PWD/dashboarditem.cpp \
