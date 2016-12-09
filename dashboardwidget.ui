@@ -17,6 +17,18 @@
    <string>Widget</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QScrollArea" name="scrollArea">
      <property name="widgetResizable">
@@ -27,8 +39,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>637</width>
-        <height>330</height>
+        <width>661</width>
+        <height>354</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
