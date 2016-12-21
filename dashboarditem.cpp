@@ -196,6 +196,7 @@ void DashboardItem::mousePressEvent(QMouseEvent *event)
             setPropertyIsDraged(true);
             mimeData->setData("dashboard/item", name.toUtf8() );
             drag->setMimeData(mimeData);
+            drag->setHotSpot(point);
             drag->setPixmap(*pixmap);
             drag->exec(Qt::MoveAction);
             setPropertyIsDraged(false);

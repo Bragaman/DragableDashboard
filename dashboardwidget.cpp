@@ -88,7 +88,7 @@ void DashboardWidget::moveRight(int column, int row)
 bool DashboardWidget::findPos(const QPoint &newPos)
 {
     auto vLay = currentLayout;
-    int border = 20;
+//    int border = 20;
     int nY = newPos.y();
     int nX = newPos.x();
 
@@ -108,40 +108,42 @@ bool DashboardWidget::findPos(const QPoint &newPos)
     if (item->widget() == currentDragedWidget)
         return false;
 
-    auto rect = item->geometry();
+    auto rect = hLay->contentsRect();
     int x,y,w,h;
     rect.getRect(&x, &y, &w, &h);
 
+    int border = w/3;
 
     newIndexY = row;
     newIndexX = column;
 
     if (nX < x + border) {
-        if (nY > y + border and nY < y + h - border) {
+//        if (nY > y + border and nY < y + h - border) {
             moveLeft(row, column);
             return true;
-        }
-        return false;
+//        }
+//        return false;
     }
 
     if (nX > x + w - border) {
-        if (nY > y + border and nY < y + h - border) {
+//        if (nY > y + border and nY < y + h - border) {
             moveRight(column, row);
             return true;
-        }
-        return false;
+//        }
+//        return false;
     }
 
     auto hLayRect = hLay->geometry();
     int xL, yL, wL,hL;
     hLayRect.getRect(&xL, &yL, &wL, &hL);
-    int borderL = hL/5;
-    if (nY > yL + hL - borderL) {
+//    int borderL = hL/5;
+    int borderL =h/2;
+    if (nY > yL + hL - borderL && nX > x + border && nX < x + w - border) {
         moveDown(row);
         return true;
     }
 
-    if (nY < yL + borderL) {
+    if (nY < yL + borderL && nX > x + border && nX < x + w - border) {
         moveUp(row);
         return true;
     }
@@ -152,10 +154,10 @@ void DashboardWidget::fixPos()
 {
     if (oldIndexY == newIndexY) {
         int tmp = oldIndexX - newIndexX;
-        if (tmp < 0 and tmp < -1)
+        if (tmp < -1)
             newIndexX--;
 
-        if (tmp > 0 and tmp != 1)
+        if (tmp > 1)
             newIndexX++;
     }
 }
@@ -276,7 +278,7 @@ bool DashboardWidget::moveWidget(const QPoint& newPos, QWidget* widget)
 void DashboardWidget::showDropPos(const QPoint &newPos)
 {
     auto lay = currentLayout;
-    if (findPos(newPos) ){
+    if (findPos(newPos)){
         fixPos();
         if (newIndexY == -1) {
             newIndexY = 0;
