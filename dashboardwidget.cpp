@@ -34,6 +34,18 @@ void DashboardWidget::addWidget(DashboardItem *item)
     auto name = item->getName();
     if (!mapItems.contains(name)) {
         connect(item, &DashboardItem::changeState, this, &DashboardWidget::onChangeItemState);
+        connect(item, &DashboardItem::changeRowHeight, this,
+                [this, item] (int newHeight){
+            auto vLay = ui->verticalLayout;
+            int row = findIndex(vLay, item->pos());
+            auto hLay = qobject_cast<QHBoxLayout *>(vLay->itemAt(row)->layout());
+            int count = hLay->count();
+            for (int i = 0; i < count; ++i) {
+                if (auto item = qobject_cast<DashboardItem*>(hLay->itemAt(i)->widget())) {
+                    item->setCurHeight(newHeight);
+                }
+            }
+        });
 
         initOnLayout(item);
         emit item->changeState(item->getState());
@@ -167,7 +179,7 @@ int DashboardWidget::findIndex(QLayout *lay, const QPoint &pos)
 {
     if (lay) {
         int count = lay->count();
-        for (int i =0; i < count; ++i) {
+        for (int i = 0; i < count; ++i) {
             auto item = lay->itemAt(i);
             QRect rect = item->geometry();
             if (rect.contains(pos))
@@ -182,7 +194,6 @@ void DashboardWidget::resizeItems(QHBoxLayout *hLay, int xHeight)
     int maxSize = xHeight;
     int count = hLay->count();
     for (int i =0; i < count; ++i) {
-
         if (auto item = qobject_cast<DashboardItem*>(hLay->itemAt(i)->widget())) {
             int h = item->getCurHeight();
             if (h < maxSize)

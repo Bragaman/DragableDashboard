@@ -117,7 +117,7 @@ int DashboardItem::getCurHeight() const
 
 void DashboardItem::setCurHeight(int value)
 {
-    if (value > 42) {
+    if (value > 102) {
         if (state != State::CLOSED) {
             curHeight = value;
             setFixedHeight(curHeight);
@@ -144,10 +144,10 @@ void DashboardItem::setSettings(QSettings *value)
 {
     settings = value;
     if (settings != nullptr) {
-        setCurHeight(settings->value(DASHBOARD_GROUP +MODULE_HEIGHT.arg(name), 200).toInt());
-        curPosY = settings->value(DASHBOARD_GROUP +MODULE_POS_Y.arg(name), 0).toInt();
-        curPosX = settings->value(DASHBOARD_GROUP +MODULE_POS_X.arg(name), 0).toInt();
-        setState(State(settings->value(DASHBOARD_GROUP +MODULE_STATE.arg(name), State::NORMAL).toInt()));
+        setCurHeight(settings->value(DASHBOARD_GROUP + MODULE_HEIGHT.arg(name), 200).toInt());
+        curPosY = settings->value(DASHBOARD_GROUP + MODULE_POS_Y.arg(name), 0).toInt();
+        curPosX = settings->value(DASHBOARD_GROUP + MODULE_POS_X.arg(name), 0).toInt();
+        setState(State(settings->value(DASHBOARD_GROUP + MODULE_STATE.arg(name), State::NORMAL).toInt()));
     } else {
         setStyleSheet("DashboardItem "
                       "{background: #2F2F2F;"
@@ -204,7 +204,7 @@ void DashboardItem::mousePressEvent(QMouseEvent *event)
 
         if (ui->resizerWidget->geometry().contains(point)) {
             resizedNow = true;
-            oldPoint = point;
+            oldPoint = point;            
         }
     }
 }
@@ -222,8 +222,11 @@ void DashboardItem::paintEvent(QPaintEvent *event)
 void DashboardItem::mouseMoveEvent(QMouseEvent *event)
 {
     if (resizedNow) {
-        setCurHeight(curHeight + event->pos().y() - oldPoint.y());
+        int newHeight = curHeight + event->pos().y() - oldPoint.y();
+        setCurHeight(newHeight);
         oldPoint = event->pos();
+        emit changeRowHeight(newHeight);
+
     } else
         QWidget::mouseMoveEvent(event);
 }

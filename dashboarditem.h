@@ -92,6 +92,7 @@ protected:
 
 signals:
     void changeState(State );
+    void changeRowHeight(int);
 };
 
 #endif // DASHBOARDITEM_H
