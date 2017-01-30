@@ -21,6 +21,7 @@ DashboardItem::DashboardItem(QWidget *parent) :
                   "{background: red;}");
     curPosY = 0;
     curPosX = 0;
+    lastPosY = 0;
     setCurHeight(155);
     state = State::NORMAL;
     resizedNow = false;
@@ -145,7 +146,9 @@ void DashboardItem::setSettings(QSettings *value)
     settings = value;
     if (settings != nullptr) {
         setCurHeight(settings->value(DASHBOARD_GROUP + MODULE_HEIGHT.arg(name), 200).toInt());
-        curPosY = settings->value(DASHBOARD_GROUP + MODULE_POS_Y.arg(name), 0).toInt();
+        curPosY = settings->value(DASHBOARD_GROUP + MODULE_POS_Y.arg(name), lastPosY).toInt();
+        if (curPosY == lastPosY) //DASHBOARD_GROUP + MODULE_POS_Y.arg(name) was not found
+            lastPosY += curHeight;
         curPosX = settings->value(DASHBOARD_GROUP + MODULE_POS_X.arg(name), 0).toInt();
         setState(State(settings->value(DASHBOARD_GROUP + MODULE_STATE.arg(name), State::NORMAL).toInt()));
     } else {
@@ -154,9 +157,10 @@ void DashboardItem::setSettings(QSettings *value)
                       "}"
                       "DashboardItem[isDraged=true] "
                       "{background: red;}");
-        curPosY = 0;
+        curPosY = lastPosY;
         curPosX = 0;
         setCurHeight(200);
+        lastPosY += curHeight;
         setState(State::NORMAL);
     }
 }

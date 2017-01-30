@@ -70,6 +70,7 @@ private:
     int curHeight;
     int curPosY;
     int curPosX;
+    int lastPosY;
 
     QSettings *settings;
 
