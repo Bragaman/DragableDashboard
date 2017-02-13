@@ -9,6 +9,9 @@ const QString DashboardItem::MODULE_POS_X         = "module_%1_pos_x";
 const QString DashboardItem::MODULE_HEIGHT        = "module_%1_height";
 const QString DashboardItem::MODULE_STATE         = "module_%1_state";
 
+const int DashboardItem::MIN_HEIGHT = 102;
+const int DashboardItem::MAX_HEIGHT = 500;
+
 DashboardItem::DashboardItem(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::DashboardItem)
@@ -118,7 +121,7 @@ int DashboardItem::getCurHeight() const
 
 void DashboardItem::setCurHeight(int value)
 {
-    if (value > 102) {
+    if (value > MIN_HEIGHT && value < MAX_HEIGHT) {
         curHeight = value;
         if (state != State::CLOSED) {
             setFixedHeight(curHeight);

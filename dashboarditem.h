@@ -26,6 +26,9 @@ public:
     static const QString MODULE_HEIGHT;
     static const QString MODULE_STATE;
 
+    static const int MIN_HEIGHT;
+    static const int MAX_HEIGHT;
+
     enum State {
         NORMAL,
         CLOSED,
