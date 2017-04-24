@@ -9,7 +9,7 @@ const QString DashboardItem::MODULE_POS_X         = "module_%1_pos_x";
 const QString DashboardItem::MODULE_HEIGHT        = "module_%1_height";
 const QString DashboardItem::MODULE_STATE         = "module_%1_state";
 
-const int DashboardItem::MIN_HEIGHT = 102;
+const int DashboardItem::MIN_HEIGHT = 180;
 const int DashboardItem::MAX_HEIGHT = 500;
 
 DashboardItem::DashboardItem(QWidget *parent) :
@@ -25,7 +25,7 @@ DashboardItem::DashboardItem(QWidget *parent) :
     curPosY = 0;
     curPosX = 0;
     lastPosY = 0;
-    setCurHeight(155);
+    setCurHeight(MIN_HEIGHT);
     state = State::NORMAL;
     resizedNow = false;
     setPropertyIsDraged(false);
