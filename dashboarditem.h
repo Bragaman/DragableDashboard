@@ -67,6 +67,8 @@ public:
 private:
     Ui::DashboardItem *ui;
 
+    static const QString HIDE_BUTTON_QSS_STATE;
+
     QString name;
     QString labelText;
     State state;
@@ -82,8 +84,10 @@ private:
 
     void setPropertyIsDraged(bool is);
 
+    void setHideButtonProperty(bool toHiddenState);
+
 private slots:
-    void on_push_arrow_clicked(bool checked);
+    void on_hideButton_clicked(bool checked);
 
     // QWidget interface
     void on_btnClose_clicked();

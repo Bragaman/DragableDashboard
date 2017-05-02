@@ -9,6 +9,8 @@ const QString DashboardItem::MODULE_POS_X         = "module_%1_pos_x";
 const QString DashboardItem::MODULE_HEIGHT        = "module_%1_height";
 const QString DashboardItem::MODULE_STATE         = "module_%1_state";
 
+const QString DashboardItem::HIDE_BUTTON_QSS_STATE = "to_hiding_state";
+
 const int DashboardItem::MIN_HEIGHT = 180;
 const int DashboardItem::MAX_HEIGHT = 500;
 
@@ -29,6 +31,7 @@ DashboardItem::DashboardItem(QWidget *parent) :
     state = State::NORMAL;
     resizedNow = false;
     setPropertyIsDraged(false);
+    setHideButtonProperty(false);
     setSettings(nullptr);
 }
 
@@ -82,6 +85,15 @@ void DashboardItem::setPropertyIsDraged(bool is)
     style()->polish(this);
 }
 
+void DashboardItem::setHideButtonProperty(bool toHiddenState)
+{
+    ui->hideButton->setProperty(HIDE_BUTTON_QSS_STATE.toLatin1(), toHiddenState);
+    style()->unpolish(ui->hideButton);
+    style()->polish(ui->hideButton);
+    style()->unpolish(this);
+    style()->polish(this);
+}
+
 DashboardItem::State DashboardItem::getState() const
 {
     return state;
@@ -90,27 +102,27 @@ DashboardItem::State DashboardItem::getState() const
 void DashboardItem::setState(const DashboardItem::State &value)
 {
     state = value;
-    ui->push_arrow->blockSignals(true);
+    ui->hideButton->blockSignals(true);
     switch (state) {
     case State::NORMAL:
         setFixedHeight(curHeight);
         ui->widget_hideable->setVisible(true);
-        ui->push_arrow->setChecked(false);
+        setHideButtonProperty(true);
         ui->resizerWidget->setVisible(true);
         setVisible(true);
         break;
     case State::CLOSED:
         setFixedHeight(44);
         ui->widget_hideable->setVisible(false);
-        ui->push_arrow->setChecked(true);
         ui->resizerWidget->setVisible(false);
+        setHideButtonProperty(false);
         setVisible(true);
     case State::HIDDEN:
         setVisible(false);
     default:
         break;
     }
-    ui->push_arrow->blockSignals(false);
+    ui->hideButton->blockSignals(false);
     emit changeState(state);
 }
 
@@ -153,7 +165,10 @@ void DashboardItem::setSettings(QSettings *value)
         if (curPosY == lastPosY) //DASHBOARD_GROUP + MODULE_POS_Y.arg(name) was not found
             lastPosY += curHeight;
         curPosX = settings->value(DASHBOARD_GROUP + MODULE_POS_X.arg(name), 0).toInt();
-        setState(State(settings->value(DASHBOARD_GROUP + MODULE_STATE.arg(name), State::NORMAL).toInt()));
+        State state = State(settings->value(DASHBOARD_GROUP + MODULE_STATE.arg(name),
+                                            State::NORMAL).toInt());
+        setState(state);
+
     } else {
         setStyleSheet("DashboardItem "
                       "{background: #2F2F2F;"
@@ -245,7 +260,7 @@ void DashboardItem::mouseReleaseEvent(QMouseEvent *event)
 }
 
 
-void DashboardItem::on_push_arrow_clicked(bool checked)
+void DashboardItem::on_hideButton_clicked(bool checked)
 {
     if (checked) {
         setState(State::CLOSED);

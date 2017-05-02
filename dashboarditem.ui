@@ -83,7 +83,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="push_arrow">
+       <widget class="QPushButton" name="hideButton">
         <property name="minimumSize">
          <size>
           <width>32</width>
