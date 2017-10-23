@@ -1,6 +1,6 @@
 #include "dashboardwidget.h"
 #include "ui_dashboardwidget.h"
-#include <QDebug>
+#include <QListView>
 
 DashboardWidget::DashboardWidget(QWidget *parent) :
     QWidget(parent),
@@ -10,6 +10,7 @@ DashboardWidget::DashboardWidget(QWidget *parent) :
     newIndexY = -1;
     oldIndexY = -1;
     ui->comboBoxItems->addItem("-------------", "");
+    ui->comboBoxItems->setView(new QListView(this));
 }
 
 DashboardWidget::~DashboardWidget()

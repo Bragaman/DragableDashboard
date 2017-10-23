@@ -17,6 +17,9 @@
    <string>Widget</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <property name="leftMargin">
     <number>5</number>
    </property>
@@ -27,7 +30,7 @@
     <number>5</number>
    </property>
    <property name="bottomMargin">
-    <number>5</number>
+    <number>0</number>
    </property>
    <item>
     <widget class="QScrollArea" name="scrollArea">
@@ -40,7 +43,7 @@
         <x>0</x>
         <y>0</y>
         <width>651</width>
-        <height>349</height>
+        <height>357</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -94,13 +97,26 @@
      </item>
      <item>
       <widget class="QLabel" name="label">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>25</height>
+        </size>
+       </property>
        <property name="text">
         <string>Add widget</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="comboBoxItems"/>
+      <widget class="QComboBox" name="comboBoxItems">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>25</height>
+        </size>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
